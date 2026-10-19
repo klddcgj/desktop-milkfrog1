@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桌面奶蛙 · Desktop Pet ｜ 单文件 Python 桌面宠物</title>
+<meta name="description" content="桌面奶蛙：一只常驻桌面的电子室友。单文件 Python 13,199 行，37 项右键交互、7 个小游戏、养成系统与 AI 对话。">
+<style>
+  :root{
+    --ink:#1b2b20; --ink2:#445448; --grey:#6b7a6e;
+    --green:#2e7d32; --green-d:#1b5e20; --green-l:#7cb342;
+    --card:#f3f8f3; --line:#d6e3d6; --dark:#0f2418; --dark2:#182a1e;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink); background:#fff;
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--green-d)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* ---------- Hero ---------- */
+  header{
+    background:radial-gradient(1200px 500px at 20% -10%, #1c4027 0%, var(--dark) 55%),
+               linear-gradient(160deg,#12301e,var(--dark));
+    color:#fff; padding:64px 0 56px; position:relative; overflow:hidden;
+  }
+  header:after{
+    content:""; position:absolute; right:-120px; bottom:-160px;
+    width:520px; height:520px; border-radius:50%; background:#17311f;
+  }
+  .hero{position:relative; z-index:2; display:flex; gap:36px; align-items:center; flex-wrap:wrap}
+  .hero-txt{flex:1 1 420px; min-width:300px}
+  .kicker{color:var(--green-l); font-weight:700; letter-spacing:.14em; font-size:13px}
+  h1{font-size:clamp(38px,6vw,60px); margin:10px 0 6px; letter-spacing:.02em}
+  .sub{font-size:clamp(16px,2.4vw,22px); color:#d8e8da; margin:0 0 18px}
+  .stats{display:flex; gap:14px; flex-wrap:wrap; margin:22px 0 26px}
+  .stat{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+        border-radius:12px; padding:10px 16px; font-size:14px}
+  .stat b{display:block; font-size:22px; color:var(--green-l); line-height:1.2}
+  .btns{display:flex; gap:12px; flex-wrap:wrap}
+  .btn{display:inline-block; text-decoration:none; font-weight:700; font-size:15px;
+       padding:12px 22px; border-radius:10px; transition:.18s}
+  .btn-p{background:var(--green-l); color:#0c2113}
+  .btn-p:hover{background:#8fc957; transform:translateY(-1px)}
+  .btn-s{border:1.5px solid rgba(255,255,255,.42); color:#fff}
+  .btn-s:hover{background:rgba(255,255,255,.1)}
+  .hero-img{flex:0 1 300px; display:flex; justify-content:center}
+  .hero-img img{width:min(300px,64vw); filter:drop-shadow(0 24px 40px rgba(0,0,0,.45))}
+
+  /* ---------- Sections ---------- */
+  section{padding:64px 0}
+  section:nth-of-type(even){background:var(--card)}
+  h2{font-size:clamp(24px,3.4vw,32px); margin:0 0 8px}
+  .lead{color:var(--ink2); margin:0 0 34px; font-size:16px}
+  h2:before{content:""; display:block; width:38px; height:4px; border-radius:2px;
+            background:var(--green); margin-bottom:14px}
+
+  .grid{display:grid; gap:16px}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px}
+  section:nth-of-type(even) .card{background:#fff}
+  .card h3{margin:0 0 8px; font-size:17px}
+  .card p{margin:0; color:var(--ink2); font-size:14.5px}
+  .card .tag{display:inline-block; font-size:12px; font-weight:700; color:var(--green-d);
+             background:#e8f2e8; border-radius:99px; padding:3px 10px; margin-bottom:10px}
+
+  /* ---------- Shots ---------- */
+  .shots{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  figure{margin:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden}
+  figure img{width:100%; display:block}
+  figcaption{padding:10px 14px; font-size:13px; color:var(--grey)}
+
+  /* ---------- Steps ---------- */
+  ol.steps{counter-reset:s; list-style:none; padding:0; margin:0; display:grid; gap:14px}
+  ol.steps li{counter-increment:s; position:relative; padding:16px 18px 16px 60px;
+              background:#fff; border:1px solid var(--line); border-radius:12px}
+  ol.steps li:before{
+    content:counter(s); position:absolute; left:16px; top:16px; width:30px; height:30px;
+    border-radius:50%; background:var(--green); color:#fff; font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b{display:block; margin-bottom:2px}
+  code{background:#eef4ee; border:1px solid #dbe7db; border-radius:6px;
+       padding:1px 6px; font-size:13.5px; font-family:Consolas,Menlo,monospace}
+  pre{background:#10201a; color:#b9e0a8; padding:16px; border-radius:10px; overflow:auto;
+      font-family:Consolas,Menlo,monospace; font-size:13.5px; line-height:1.6}
+
+  /* ---------- Table ---------- */
+  table{width:100%; border-collapse:collapse; font-size:14.5px; background:#fff}
+  th,td{border:1px solid var(--line); padding:10px 12px; text-align:left}
+  th{background:#e8f2e8; font-weight:700}
+  td:first-child{white-space:nowrap; font-weight:700}
+
+  footer{background:var(--dark); color:#9fb8a4; padding:38px 0; font-size:14px}
+  footer a{color:var(--green-l)}
+  .note{color:var(--grey); font-size:13px}
+  @media (max-width:640px){
+    header{padding:44px 0 36px}
+    section{padding:44px 0}
+    .hero-img{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hero">
+    <div class="hero-txt">
+      <div class="kicker">HACKATHON 2026 · 桌面应用</div>
+      <h1>桌面奶蛙</h1>
+      <p class="sub">一只住在你桌面上的电子室友</p>
+      <div class="stats">
+        <div class="stat"><b>13,199</b>行 · 单文件</div>
+        <div class="stat"><b>596</b>KB · 零 UI 框架</div>
+        <div class="stat"><b>37</b>项右键交互</div>
+        <div class="stat"><b>7</b>个小游戏</div>
+      </div>
+      <div class="btns">
+        <a class="btn btn-p" href="#install">立即安装体验</a>
+        <a class="btn btn-s" href="https://github.com/" id="repo-link">查看源码</a>
+        <a class="btn btn-s" href="docs/桌面奶蛙-黑客松答辩.pdf">答辩 PPT</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="screenshots/web/hero.png" alt="桌面奶蛙">
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>它为什么不会「活不过三天」</h2>
+    <p class="lead">市面上的桌面宠物大多三分钟热度：太吵、太空、太贵。我们把「不打扰」当成可调参数来设计。</p>
+    <div class="grid g3">
+      <div class="card">
+        <span class="tag">原则 01</span>
+        <h3>不打扰</h3>
+        <p>待机决策间隔 14~30 秒（原本 4~9 秒），散步权重降到 1/4，打盹权重升到 4 倍。它会长时间安静趴着，偶尔看你一眼，而不是在屏幕上疯跑。</p>
+      </div>
+      <div class="card">
+        <span class="tag">原则 02</span>
+        <h3>有内容</h3>
+        <p>五维养成、4 地点探险、7 个小游戏、图鉴、5 章剧情、9 个天赋、8 件装扮 + 5 款皮肤、16 个成就 —— 每天都能发现一点新东西。</p>
+      </div>
+      <div class="card">
+        <span class="tag">原则 03</span>
+        <h3>真桌面</h3>
+        <p>无边框悬浮、颜色键透明、四周点击穿透：它像桌面上的一张便利贴，不挡你干活。时钟 / 天气 / 网速挂件则真有用途。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>实际运行效果</h2>
+    <p class="lead">以下都是真实屏幕截图，不是设计稿。</p>
+    <div class="shots">
+      <figure>
+        <img src="screenshots/web/menu.jpg" alt="37 项右键菜单">
+        <figcaption>右键菜单：37 项功能，独立窗口、三列网格，永远避开宠物不被遮挡</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/web/desktop.jpg" alt="桌面悬浮与挂件">
+        <figcaption>悬浮在代码编辑器上：蛙身可点、四周可透，旁边是时钟/天气挂件</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/web/games.jpg" alt="7 个小游戏">
+        <figcaption>7 个小游戏直接画在宠物窗口的 Canvas 里，不额外开窗</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/web/skins.jpg" alt="5 款皮肤">
+        <figcaption>5 款扭蛋皮肤（红/粉/蓝/紫/彩虹），仅在换装预览里展示</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/web/chat.jpg" alt="AI 对话">
+        <figcaption>AI 对话：接入 OpenAI 兼容大模型，无 Key 自动退回本地规则</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/web/pet.jpg" alt="互动">
+        <figcaption>点一下它会开心，悬停会歪头看你的鼠标</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>技术实现</h2>
+    <p class="lead">纯 Python 单文件，13,199 行；只依赖标准库 tkinter 与 Pillow。</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>透明窗口 + 点击穿透</h3>
+        <p>tkinter 没有逐像素透明。做法是给窗口指定一个「绝不出现在素材里」的颜色当色键：
+        <code>-transparentcolor</code> 会把该颜色当透明，而且<b>该像素区域连鼠标都能穿透</b>。</p>
+        <pre>KEY_COLOR = "#ff00fe"
+root.wm_attributes("-transparentcolor", KEY_COLOR)
+canvas.configure(bg=KEY_COLOR)
+# 色键像素 → 透明 + 可点透
+# 蛙身像素 → 正常响应点击</pre>
+      </div>
+      <div class="card">
+        <h3>素材管线 + 程序化呼吸动画</h3>
+        <p>15 张 webp/gif 逐张过管线：四角色差抠背景 → 按「脚底线」对齐 → 磁盘缓存（二次启动 &lt; 100ms）。
+        只有 1 张静态待机图，用正弦缩放 + 轻微位移程序化生成 6 帧呼吸动画，<b>0 额外美术资源</b>。</p>
+      </div>
+      <div class="card">
+        <h3>状态机与权重表</h3>
+        <p>40ms tick 驱动五维数值（饥饿/心情/精力/亲密度/无聊），每轮按权重抽动作：打盹 4 / 发呆 2 / 散步 1 / 自言自语 1。
+        陪伴感来自「它还在」，不是「它在闹」。</p>
+      </div>
+      <div class="card">
+        <h3>AI 对话 + 本地记忆库</h3>
+        <p>OpenAI 兼容协议，可切千问 / DeepSeek / Kimi / 智谱 / 本地 Ollama。
+        对话后抽取结构化记忆（姓名、生日、喜好）写进存档，下次注入 system prompt —— 所以它记得你的生日。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>三步跑起来</h2>
+    <p class="lead">Windows 10/11（64 位）+ Python 3.10~3.14。只有一个第三方依赖：Pillow。</p>
+    <ol class="steps">
+      <li><b>拿到代码</b>
+        <code>git clone &lt;本仓库地址&gt;</code>，或直接下载 ZIP 解压。</li>
+      <li><b>安装依赖</b>
+        <code>pip install pillow</code><br>
+        <span class="note">离线环境可用仓库 Release 中的「离线安装包」，内置各版本 wheel + pip，全程不联网。</span></li>
+      <li><b>启动</b>
+        <code>python desktop_pet.py</code><br>
+        <span class="note">Windows 也可直接双击 <code>启动桌宠.bat</code>：它会自动找 Python、缺 Pillow 自动装、出错会停下来显示原因。</span></li>
+    </ol>
+    <h2 style="margin-top:44px">自检（可选）</h2>
+    <pre>python 检查素材.py            # 素材是否齐全、有没有误用外部副本的图
+python desktop_pet.py --selftest
+python selftest_features.py   # 18 阶段功能自检 → 预期输出「结论：全部通过」</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>操作一览</h2>
+    <table>
+      <tr><th>操作</th><th>效果</th></tr>
+      <tr><td>左键单击</td><td>摸摸它，亲密度 +1，它会开心</td></tr>
+      <tr><td>按住拖动</td><td>挪到屏幕任意位置（会记住）</td></tr>
+      <tr><td>鼠标悬停</td><td>歪头看着你的鼠标</td></tr>
+      <tr><td>右键点击</td><td>打开「奶蛙菜单」—— 37 项功能</td></tr>
+      <tr><td>长按</td><td>抚摸互动</td></tr>
+      <tr><td>滚轮</td><td>背包/列表滚动</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>使用的开源技术</h2>
+    <table>
+      <tr><th>技术</th><th>作用</th><th>许可证</th></tr>
+      <tr><td>Python 3.10+</td><td>唯一运行时语言，单文件实现全部逻辑</td><td>PSF</td></tr>
+      <tr><td>tkinter</td><td>全部 GUI：透明窗口、Canvas 渲染、菜单、7 个游戏</td><td>PSF</td></tr>
+      <tr><td>Pillow ≥10</td><td>素材解码（webp/gif）、抠背景、缩放、呼吸动画</td><td>HPND（BSD 类）</td></tr>
+      <tr><td>OpenAI 兼容协议</td><td>接入千问 / DeepSeek / Kimi / 本地 Ollama</td><td>事实标准</td></tr>
+      <tr><td>Open-Meteo</td><td>天气数据（公开免费接口）</td><td>CC-BY</td></tr>
+    </table>
+    <p class="note" style="margin-top:14px">
+      本项目代码以 MIT 协议开源；宠物形象为项目自有素材；未使用第三方付费素材、字体或闭源 SDK。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div style="font-size:16px;color:#d8e8da;font-weight:700;margin-bottom:6px">桌面奶蛙 · Desktop Pet</div>
+    <div>黑客松参赛作品 ｜ 单文件 Python 桌面宠物 · 13,199 行 · MIT License</div>
+    <div style="margin-top:12px">
+      <a href="https://github.com/" id="repo-link2">源码仓库</a> ·
+      <a href="docs/桌面奶蛙-黑客松答辩.pdf">答辩 PPT（PDF）</a> ·
+      <a href="README.md">README</a> ·
+      <a href="安装说明.md">安装说明</a>
+    </div>
+    <div class="note" style="margin-top:14px">
+      本页为静态演示页，桌面程序需在本地运行（浏览器内无法运行 Python 桌面窗口）。
+    </div>
+  </div>
+</footer>
+
+<script>
+  // 自动把「查看源码」指向当前仓库（Pages 地址 → 仓库地址）
+  (function () {
+    var host = location.hostname;                 // 例如 milkfrog.github.io
+    var path = location.pathname.split('/')[1];   // 例如 desktop-milkfrog
+    if (host.endsWith('.github.io')) {
+      var user = host.split('.')[0];
+      var url = 'https://github.com/' + user + '/' + (path || '');
+      ['repo-link', 'repo-link2'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.href = url;
+      });
+    }
+  })();
+</script>
+</body>
+</html>

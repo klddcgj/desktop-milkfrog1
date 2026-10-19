@@ -1,0 +1,9 @@
+# 桌宠 Desktop Pet —— 依赖清单
+# 安装：pip install -r requirements.txt
+#
+# 全部依赖只有 1 个（tkinter 是 Python 标准库自带，无需安装）
+pillow>=10.0.0
+
+# 大模型对话功能使用 Python 标准库 urllib 实现，不需要 requests。
+# 如需自己换成 requests 实现，再取消下面这行注释：
+# requests>=2.28.0
